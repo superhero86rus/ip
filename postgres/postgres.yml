@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-statefulset
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data"]
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgresdata
+      containers:
+      - name: postgres
+        image: postgres:16.9
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+        - name: POSTGRES_DB
+          value: "postgres"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 999
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgresdata
+      volumes:
+      - name: postgresdata
+        persistentVolumeClaim:
+          claimName: postgres-volume-claim
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: inspector-pod
+spec:
+  containers:
+  - name: inspector-pod
+    image: busybox
+    command: ["sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - name: postgresdata
+      mountPath: /var/lib/postgresql/data
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+  volumes:
+  - name: postgresdata
+    persistentVolumeClaim:
+      claimName: postgres-volume-claim
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-volume
+  labels:
+    type: local
+    app: postgres
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /data/postgresql
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-volume-claim
+  labels:
+    app: postgres
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+# Для доступа через pgadmin указываем CLUSTER-IP нашего сервиса postgres-service

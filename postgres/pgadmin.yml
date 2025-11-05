@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgadmin-configmap
+data:
+  PGADMIN_DEFAULT_EMAIL: "kotov.alexandr@gmail.com"
+  PGADMIN_DEFAULT_PASSWORD: "admin"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+    spec:
+      containers:
+      - name: pgadmin
+        image: dpage/pgadmin4:latest
+        envFrom:
+        - configMapRef:
+            name: pgadmin-config
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        # livenessProbe:
+        #   httpGet:
+        #     path: /server_status
+        #     port: 80
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 30
+        # readinessProbe:
+        #   httpGet:
+        #     path: /server_status
+        #     port: 80
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 30
+      #   volumeMounts:
+      #   - mountPath: /var/lib/pgadmin
+      #     name: pgadmin-storage
+      # volumes:
+      # - name: pgadmin-storage
+      #   emptyDir: {}
+# Первоначально, добавляем Ingress Controller в кластер
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.7.1/deploy/static/provider/cloud/deploy.yaml
+# Проверяем: kubectl get pods -n ingress-nginx
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: pgadmin-ingress
+#   annotations:
+#     kubernetes.io/ingress.class: nginx
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+#     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+# spec:
+#   rules:
+#   - host: kubernetes.local
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: pgadmin-service
+#             port:
+#               number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin-service
+spec:
+  type: NodePort
+  selector:
+    app: pgadmin
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
