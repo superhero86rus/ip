@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app-auth
+  labels:
+    app: ip-app-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ip-app-auth
+  template:
+    metadata:
+      labels:
+        app: ip-app-auth
+    spec:
+      containers:
+        - name: ip-app-auth
+          image: ip-k8s-lcm01:5000/ip-app-auth3:9_5
+          ports:
+            - containerPort: 8088
+          livenessProbe:
+            httpGet:
+              port: 8088
+              path: /actuator/health/liveness
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8088
+            initialDelaySeconds: 10
+            periodSeconds: 3
+            timeoutSeconds: 30
+          env:
+            - name: IP_APP_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_HOST
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_PORT
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_NAME
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_USERNAME
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_PASSWORD
+                  name: ip-app-db-configmap
+            - name: IP_APP_LICENSE
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_LICENSE
+                  name: ip-app-license-configmap
+            - name: IP_APP_AUTH_SYSTEM_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_AUTH_SYSTEM_KEY
+                  name: ip-app-auth-configmap
+            - name: IP_APP_AUTH_OIDC_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_AUTH_OIDC_DOMAIN
+                  name: ip-app-auth-configmap
+            - name: IP_APP_AUTH_OIDC_CLIENTID
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_AUTH_OIDC_CLIENTID
+                  name: ip-app-auth-configmap
+            - name: IP_APP_AUTH_OIDC_CLIENTSECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_AUTH_OIDC_CLIENTSECRET
+                  name: ip-app-auth-configmap
+            - name: IP_APP_AUTH_OIDC_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_AUTH_OIDC_BASE_URL
+                  name: ip-app-auth-configmap
+            - name: IP_APP_AUTH_TYPE_DEFAULT
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_AUTH_TYPE_DEFAULT
+                  name: ip-app-auth-configmap

@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  IP_APP_IS_LOCALIZATION_ON: 'false'
+  IP_APP_DEFAULT_LANGUAGE: 'ru'
+kind: ConfigMap
+metadata:
+  name: ip-app-localization-configmap

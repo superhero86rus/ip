@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch-logging
+  labels:
+    app: elasticsearch-logging
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: elasticsearch-logging
+      labels:
+        app: elasticsearch-logging
+    spec:
+      containers:
+        - name: elasticsearch-logging
+          image: ip-k8s-lcm01:5000/elasticsearch:8.8.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: -Xms512m -Xmx1g
+            - name: xpack.security.enabled
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_IS_SECURE
+                  name: ip-app-elk-configmap
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: elasticsearch-logging

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ip-app-eureka
+spec:
+  ports:
+  - port: 8761
+    name: plaintext
+    targetPort: 8761
+  selector:
+    app: ip-app-eureka

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ip-app-auth
+spec:
+  ports:
+  - port: 8088
+    name: plaintext
+    targetPort: 8088
+  selector:
+    app: ip-app-auth

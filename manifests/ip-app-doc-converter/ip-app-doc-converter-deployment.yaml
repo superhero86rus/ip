@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app-doc-converter
+  labels:
+    app: ip-app-doc-converter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ip-app-doc-converter
+  template:
+    metadata:
+      labels:
+        app: ip-app-doc-converter
+    spec:
+      containers:
+      - name: ip-app-doc-converter
+        image: ip-k8s-lcm01:5000/ip-app-doc-converter:9_3
+        ports:
+        - containerPort: 8084
+        resources:
+            requests:
+              cpu: 500m
+              memory: 600Mi

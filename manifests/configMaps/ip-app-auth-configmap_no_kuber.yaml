@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  IP_APP_AUTH_SYSTEM_KEY: 'p27EUwE12MYkM1STGZbH'
+  IP_APP_SECURITY_FAILED_LOGIN_LOCK_INTERVAL: '30'
+kind: ConfigMap
+metadata:
+  name: ip-app-auth-configmap

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app-gateway-nginx
+  labels:
+    app: ip-app-gateway-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ip-app-gateway-nginx
+  template:
+    metadata:
+      labels:
+        app: ip-app-gateway-nginx
+    spec:
+      containers:
+        - name: ip-app-gateway-nginx
+          image: ip-k8s-lcm01:5000/ip-app-gateway-nginx4:9_5
+          ports:
+            - containerPort: 80
+          env:
+            - name: CLUSTER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: CLUSTER_NAME
+                  name: ip-app-gateway-nginx-configmap
+            - name: RESOLVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: RESOLVER_NAME
+                  name: ip-app-gateway-nginx-configmap
+            - name: BODY_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  key: BODY_SIZE
+                  name: ip-app-gateway-nginx-configmap
+          volumeMounts:
+            - name: ip-app-gateway-nginx-static
+              mountPath: /app/webApp/static
+      volumes:
+        - name: ip-app-gateway-nginx-static
+          persistentVolumeClaim:
+            claimName: ip-app-gateway-nginx-static-pvc

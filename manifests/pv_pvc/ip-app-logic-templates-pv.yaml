@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ip-app-logic-templates-pv-95
+spec:
+  capacity:
+    storage: 10Gi 
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce 
+  nfs:
+    server: 10.3.6.144
+    path: "/ip_data_95/templates"

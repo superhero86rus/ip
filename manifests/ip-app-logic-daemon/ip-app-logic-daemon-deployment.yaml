@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app-logic-daemon
+  labels:
+    app: ip-app-logic-daemon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ip-app-logic-daemon
+  template:
+    metadata:
+      labels:
+        app: ip-app-logic-daemon
+    spec:
+      containers:
+      - name: ip-app
+        image: ip-k8s-lcm01:5000/ip-app-logic-customjars2:9_5
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            port: 8080
+            path: /json/cluster/local/actuator/health/liveness
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 120
+        readinessProbe:
+          httpGet:
+            path: /json/cluster/local/actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 3
+        env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: IP_APP_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_HOST
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_PORT
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_NAME
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_USERNAME
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_PASSWORD
+                  name: ip-app-db-configmap
+            - name: IP_APP_DAEMON_NAMES
+              value: "all"
+            - name: IP_APP_AUTH_SYSTEM_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_AUTH_SYSTEM_KEY
+                  name: ip-app-auth-configmap

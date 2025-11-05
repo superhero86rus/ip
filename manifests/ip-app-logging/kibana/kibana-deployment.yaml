@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  labels:
+    app: kibana
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: kibana
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: ip-k8s-lcm01:5000/kibana:8.8.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5601
+          volumeMounts:
+            - name: config
+              mountPath: /usr/share/kibana/config/kibana.yml
+              subPath: kibana.yml
+      restartPolicy: Always
+      volumes:
+        - name: config
+          configMap:
+            name: ip-app-elk-configmap
+  selector:
+    matchLabels:
+      app: kibana

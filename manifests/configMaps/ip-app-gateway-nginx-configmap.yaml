@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  CLUSTER_NAME: 'idea95'
+  RESOLVER_NAME: 'coredns.kube-system.svc.cluster.local'
+  BODY_SIZE: '200M'
+kind: ConfigMap
+metadata:
+  name: ip-app-gateway-nginx-configmap

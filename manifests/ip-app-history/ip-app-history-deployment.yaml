@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app-history
+  labels:
+    app: ip-app-history
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ip-app-history
+  template:
+    metadata:
+      labels:
+        app: ip-app-history
+    spec:
+      containers:
+        - name: ip-app-history
+          image: ip-k8s-lcm01:5000/ip-app-history:9_5
+          ports:
+            - containerPort: 8085
+          livenessProbe:
+            httpGet:
+              port: 8085
+              path: /actuator/health/liveness
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8085
+            initialDelaySeconds: 10
+            periodSeconds: 3
+            timeoutSeconds: 30
+          env:
+            - name: IP_APP_DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_HOST
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_PORT
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_NAME
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_USERNAME
+                  name: ip-app-db-configmap
+            - name: IP_APP_DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: IP_APP_DB_PASSWORD
+                  name: ip-app-db-configmap

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app-eureka
+  labels:
+    app: ip-app-eureka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ip-app-eureka
+  template:
+    metadata:
+      labels:
+        app: ip-app-eureka
+    spec:
+      containers:
+      - name: ip-app
+        image: ip-k8s-lcm01:5000/ip-app-eureka:9_3
+        ports:
+        - containerPort: 8761

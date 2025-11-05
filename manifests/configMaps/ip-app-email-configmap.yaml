@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  IP_APP_MAIL_HOST: 'smtp.host.address'
+  IP_APP_MAIL_PORT: '465'
+  IP_APP_MAIL_USERNAME: 'no_reply@domain.ru'
+  IP_APP_MAIL_PASSWORD: 'no_reply_password'
+  IP_APP_MAIL_DO_AUTH: 'true'
+  IP_APP_MAIL_ENABLE_SSL: 'true'
+  IP_APP_MAIL_ENABLE_TLS: 'true'
+kind: ConfigMap
+metadata:
+  name: ip-app-email-configmap

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app-redict
+  labels:
+    app: ip-app-redict
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ip-app-redict
+  template:
+    metadata:
+      labels:
+        app: ip-app-redict
+    spec:
+      containers:
+        - name: ip-app-redict
+          image: ip-k8s-lcm01:5000/redict:latest
+          ports:
+            - containerPort: 6379

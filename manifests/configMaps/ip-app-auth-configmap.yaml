@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  IP_APP_AUTH_SYSTEM_KEY: 'p27EUwE12MYkM1STGZbH'
+  IP_APP_SECURITY_FAILED_LOGIN_LOCK_INTERVAL: '30'
+  IP_APP_AUTH_TYPE_DEFAULT: 'OIDC'
+    #http://ip-k8s-kc01.repo.lcl/
+    #IP_APP_AUTH_OIDC_DOMAIN: 'http://10.3.6.145:8080'
+  IP_APP_AUTH_OIDC_DOMAIN: 'http://ip-k8s-kc01.repo.lcl:8080'
+  IP_APP_AUTH_OIDC_BASE_URL: '/realms/idea/protocol/openid-connect'
+  IP_APP_AUTH_OIDC_CLIENTID: 'account'
+  IP_APP_AUTH_OIDC_CLIENTSECRET: 'none'
+kind: ConfigMap
+metadata:
+  name: ip-app-auth-configmap

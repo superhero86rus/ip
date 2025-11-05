@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  IP_APP_DB_HOST: '10.3.6.144'
+  IP_APP_DB_PORT: '5432'
+  IP_APP_DB_NAME: 'ipsm_db_95'
+  IP_APP_DB_USERNAME: 'system_ipuser'
+  IP_APP_DB_PASSWORD: ''
+  IP_APP_DB_QUERY_TIMEOUT: '600'
+kind: ConfigMap
+metadata:
+  name: ip-app-db-configmap
