@@ -1,0 +1,18 @@
+:root {
+  --main-background: #fff;
+  --font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+/*  --font-family: Verdana, sans-serif;
+*/
+
+  --logo-src: url(/static/logoIP.png);
+  --logo-width: 40px;
+  --logo-height: 50px;
+
+  --nav-bar-background: #0066A1;
+  --nav-bar-background-level-2: #00507C;
+  --nav-bar-background-level-3: #003356;
+  --nav-bar-color: #fff;
+  --nav-bar-hover-color: #8AB0D2;
+}
+-hover-color: #0bb5ff;
+}
