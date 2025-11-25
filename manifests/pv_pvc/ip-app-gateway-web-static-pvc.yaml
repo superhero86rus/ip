@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ip-app-gateway-nginx-static-pvc
+  name: ip-app-gateway-web-static-pvc
 spec:
   storageClassName: manual
   accessModes:
@@ -9,4 +9,4 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  volumeName: ip-app-gateway-nginx-static-pv-95
+  volumeName: ip-app-gateway-web-static-pv-95

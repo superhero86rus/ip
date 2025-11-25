@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app-gateway-web
+  labels:
+    app: ip-app-gateway-web
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  selector:
+    matchLabels:
+      app: ip-app-gateway-web
+      GPBApp: ip-app-gateway-web
+      GPBAppVer: gpb
+      GPBEnvironment: gpb1
+  template:
+    metadata:
+      labels:
+        app: ip-app-gateway-web
+        GPBApp: ip-app-gateway-web
+        GPBAppVer: gpb
+        GPBEnvironment: gpb1
+    spec:
+      securityContext:
+        fsGroup: 101
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: ip-app-gateway-web
+          image: superhero86/ip-app-gateway-web:9.5
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: CLUSTER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: CLUSTER_NAME
+                  name: ip-app-gateway-web-configmap
+            - name: RESOLVER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: RESOLVER_NAME
+                  name: ip-app-gateway-web-configmap
+            - name: BODY_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  key: BODY_SIZE
+                  name: ip-app-gateway-web-configmap
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 101
+            runAsGroup: 101
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - name: ip-app-gateway-web-static
+              mountPath: /app/webApp/static
+      volumes:
+        - name: ip-app-gateway-web-static
+          persistentVolumeClaim:
+            claimName: ip-app-gateway-web-static-pvc
