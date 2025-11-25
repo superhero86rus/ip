@@ -47,12 +47,12 @@ spec:
         #     port: 80
         #   initialDelaySeconds: 30
         #   periodSeconds: 30
-      #   volumeMounts:
-      #   - mountPath: /var/lib/pgadmin
-      #     name: pgadmin-storage
-      # volumes:
-      # - name: pgadmin-storage
-      #   emptyDir: {}
+        volumeMounts:
+        - mountPath: /var/lib/pgadmin
+          name: pgadmin-storage
+      volumes:
+      - name: pgadmin-storage
+        emptyDir: {}
 # Первоначально, добавляем Ingress Controller в кластер
 # kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.7.1/deploy/static/provider/cloud/deploy.yaml
 # Проверяем: kubectl get pods -n ingress-nginx
