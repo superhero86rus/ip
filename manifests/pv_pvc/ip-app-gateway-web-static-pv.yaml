@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: ip-app-gateway-nginx-static-pv-95
+  name: ip-app-gateway-web-static-pv-95
 spec:
   capacity:
     storage: 1Gi
@@ -9,5 +9,5 @@ spec:
   accessModes:
     - ReadWriteOnce
   nfs:
-    server: 10.3.6.144
-    path: "/ip_data_95/static"
+    server: 192.168.57.4
+    path: "/nfs/ip_data/static"

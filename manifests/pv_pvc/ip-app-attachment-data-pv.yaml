@@ -4,10 +4,10 @@ metadata:
   name: ip-app-attachment-data-pv-95
 spec:
   capacity:
-    storage: 10Gi 
+    storage: 10Gi
   storageClassName: manual
   accessModes:
     - ReadWriteOnce 
   nfs:
-    server: 10.3.6.144
-    path: "/ip_data_95/attachments"
+    server: 192.168.57.4
+    path: "/nfs/ip_data/attachments"
