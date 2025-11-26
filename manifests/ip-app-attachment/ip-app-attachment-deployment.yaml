@@ -6,31 +6,60 @@ metadata:
     app: ip-app-attachment
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
   selector:
     matchLabels:
       app: ip-app-attachment
+      GPBApp: ip-app-attachment
+      GPBAppVer: gpb
+      GPBEnvironment: gpb1
   template:
     metadata:
       labels:
         app: ip-app-attachment
+        GPBApp: ip-app-attachment
+        GPBAppVer: gpb
+        GPBEnvironment: gpb1
     spec:
+      # topologySpreadConstraints:
+      #   - labelSelector:
+      #       matchLabels:
+      #         app: ip-app-auth
+      #     maxSkew: 1
+      #     topologyKey: kubernetes.io/hostname
+      #     whenUnsatisfiable: ScheduleAnyway
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: ip-app-attachment
-          image: ip-k8s-lcm01:5000/ip-app-attachment:9_5
+          image: superhero86/ip-app-attachment:9.5
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
           ports:
             - containerPort: 8082
           livenessProbe:
             httpGet:
               port: 8082
               path: /actuator/health/liveness
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 5
             timeoutSeconds: 30
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8082
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 3
             timeoutSeconds: 30
           volumeMounts:
@@ -62,6 +91,17 @@ spec:
                 configMapKeyRef:
                   key: IP_APP_DB_PASSWORD
                   name: ip-app-db-configmap
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
       volumes:
       - name: ip-app-attachment-data
         persistentVolumeClaim:
