@@ -9,14 +9,27 @@ spec:
   selector:
     matchLabels:
       app: ip-app-history
+      GPBApp: ip-app-history
+      GPBAppVer: gpb
+      GPBEnvironment: gpb1
   template:
     metadata:
       labels:
         app: ip-app-history
+        GPBApp: ip-app-history
+        GPBAppVer: gpb
+        GPBEnvironment: gpb1
     spec:
       containers:
         - name: ip-app-history
-          image: ip-k8s-lcm01:5000/ip-app-history:9_5
+          image: superhero86/ip-app-history:9.5
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
           ports:
             - containerPort: 8085
           livenessProbe:
@@ -59,3 +72,14 @@ spec:
                 configMapKeyRef:
                   key: IP_APP_DB_PASSWORD
                   name: ip-app-db-configmap
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
