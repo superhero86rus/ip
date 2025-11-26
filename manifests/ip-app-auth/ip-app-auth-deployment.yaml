@@ -6,31 +6,62 @@ metadata:
     app: ip-app-auth
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
   selector:
     matchLabels:
       app: ip-app-auth
+      GPBApp: ip-app-auth
+      GPBAppVer: gpb
+      GPBEnvironment: gpb1
   template:
     metadata:
       labels:
         app: ip-app-auth
+        GPBApp: ip-app-auth
+        GPBAppVer: gpb
+        GPBEnvironment: gpb1
     spec:
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app: ip-app-auth
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      securityContext:
+        fsGroup: 100001
+        runAsUser: 100001
+        runAsGroup: 100001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: ip-app-auth
-          image: ip-k8s-lcm01:5000/ip-app-auth3:9_5
+          image: superhero86/ip-app-auth:9.5-rootless-100001
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
           ports:
             - containerPort: 8088
           livenessProbe:
             httpGet:
               port: 8088
               path: /actuator/health/liveness
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 20
+            periodSeconds: 10
             timeoutSeconds: 30
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8088
-            initialDelaySeconds: 10
+            initialDelaySeconds: 20
             periodSeconds: 3
             timeoutSeconds: 30
           env:
@@ -69,28 +100,19 @@ spec:
                 configMapKeyRef:
                   key: IP_APP_AUTH_SYSTEM_KEY
                   name: ip-app-auth-configmap
-            - name: IP_APP_AUTH_OIDC_DOMAIN
+            - name: IP_APP_SECURITY_FAILED_LOGIN_LOCK_INTERVAL
               valueFrom:
                 configMapKeyRef:
-                  key: IP_APP_AUTH_OIDC_DOMAIN
+                  key: IP_APP_SECURITY_FAILED_LOGIN_LOCK_INTERVAL
                   name: ip-app-auth-configmap
-            - name: IP_APP_AUTH_OIDC_CLIENTID
-              valueFrom:
-                configMapKeyRef:
-                  key: IP_APP_AUTH_OIDC_CLIENTID
-                  name: ip-app-auth-configmap
-            - name: IP_APP_AUTH_OIDC_CLIENTSECRET
-              valueFrom:
-                configMapKeyRef:
-                  key: IP_APP_AUTH_OIDC_CLIENTSECRET
-                  name: ip-app-auth-configmap
-            - name: IP_APP_AUTH_OIDC_BASE_URL
-              valueFrom:
-                configMapKeyRef:
-                  key: IP_APP_AUTH_OIDC_BASE_URL
-                  name: ip-app-auth-configmap
-            - name: IP_APP_AUTH_TYPE_DEFAULT
-              valueFrom:
-                configMapKeyRef:
-                  key: IP_APP_AUTH_TYPE_DEFAULT
-                  name: ip-app-auth-configmap
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 100001
+            runAsGroup: 100001
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
