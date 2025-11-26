@@ -34,12 +34,13 @@ spec:
         - name: POSTGRES_DB
           value: "postgres"
         resources:
+          # Критически важно ставить одинаковые значения requests/limits
           requests:
-            memory: "256Mi"
-            cpu: "250m"
+            memory: "8Gi"
+            cpu: "4"
           limits:
-            memory: "1Gi"
-            cpu: "500m"
+            memory: "8Gi"
+            cpu: "4"
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
