@@ -6,16 +6,49 @@ metadata:
     app: ip-app-eureka
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
   selector:
     matchLabels:
       app: ip-app-eureka
+      GPBApp: ip-app-eureka
+      GPBAppVer: gpb
+      GPBEnvironment: gpb1
   template:
     metadata:
       labels:
         app: ip-app-eureka
+        GPBApp: ip-app-eureka
+        GPBAppVer: gpb
+        GPBEnvironment: gpb1
     spec:
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: ip-app
-        image: ip-k8s-lcm01:5000/ip-app-eureka:9_3
+        image: superhero86/ip-app-eureka:9.5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "500m"
         ports:
         - containerPort: 8761
+        securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
