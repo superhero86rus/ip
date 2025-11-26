@@ -33,7 +33,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: ip-app-gateway-web
-          image: superhero86/ip-app-gateway-web:9.5
+          image: superhero86/ip-app-gateway-web:9.5-rootless-101
           resources:
             requests:
               memory: "256Mi"

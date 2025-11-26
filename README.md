@@ -10,3 +10,5 @@ kubectl apply -f .
 # 3. Первый - ip-app-gateway-web
 # Копируем статические файлы на шару /nfs/ip_data/static через контейнер ip-app-gateway-web
 # kubectl cp ../static/. ip-app-gateway-web-56dd8f59c5-xn8cr:/app/webApp/static
+
+# 4. Деплоим все манифесты (деплойменты и сервисы)
