@@ -9,13 +9,41 @@ spec:
   selector:
     matchLabels:
       app: ip-app-redict
+      GPBApp: ip-app-redict
+      GPBAppVer: gpb
+      GPBEnvironment: gpb1
   template:
     metadata:
       labels:
         app: ip-app-redict
+        GPBApp: ip-app-redict
+        GPBAppVer: gpb
+        GPBEnvironment: gpb1
     spec:
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: ip-app-redict
-          image: ip-k8s-lcm01:5000/redict:latest
+          image: superhero86/redict:latest
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
           ports:
             - containerPort: 6379
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
