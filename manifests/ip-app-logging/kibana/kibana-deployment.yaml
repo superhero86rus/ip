@@ -6,6 +6,11 @@ metadata:
     app: kibana
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
   template:
     metadata:
       name: kibana
@@ -13,15 +18,22 @@ spec:
         app: kibana
     spec:
       containers:
-        - name: kibana
-          image: ip-k8s-lcm01:5000/kibana:8.8.0
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 5601
-          volumeMounts:
-            - name: config
-              mountPath: /usr/share/kibana/config/kibana.yml
-              subPath: kibana.yml
+      - name: kibana
+        image: kibana:8.13.4
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1
+          limits:
+            memory: 4Gi
+            cpu: 2
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 5601
+        volumeMounts:
+          - name: config
+            mountPath: /usr/share/kibana/config/kibana.yml
+            subPath: kibana.yml
       restartPolicy: Always
       volumes:
         - name: config

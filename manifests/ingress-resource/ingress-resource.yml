@@ -3,18 +3,28 @@ kind: Ingress
 metadata:
   name: ingress-resource
   namespace: default
-  # annotations:
+  #   annotations:
   #   nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
   ingressClassName: nginx
   rules:
-  - host: kubernetes.local
+  - host: minikube.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/nosso"
+        backend:
+          service:
+            name: ip-app-gateway-web-svc
+            port: 
+              number: 13080
+  - host: kibana.minikube.local
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: ip-app-gateway-web-svc
+            name: kibana
             port: 
-              number: 13080
+              number: 5601

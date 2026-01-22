@@ -4,7 +4,7 @@ metadata:
   name: pgadmin-configmap
 data:
   PGADMIN_DEFAULT_EMAIL: "kotov.alexandr@gmail.com"
-  PGADMIN_DEFAULT_PASSWORD: "admin"
+  PGADMIN_DEFAULT_PASSWORD: "Ab123456"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -12,6 +12,11 @@ metadata:
   name: pgadmin-deployment
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
   selector:
     matchLabels:
       app: pgadmin

@@ -6,6 +6,11 @@ metadata:
     app: logstash
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
   template:
     metadata:
       name: logstash
@@ -13,16 +18,23 @@ spec:
         app: logstash
     spec:
       containers:
-        - name: logstash
-          image: ip-k8s-lcm01:5000/logstash:8.13.4
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 5044
-          volumeMounts:
-            - name: config
-              mountPath: /usr/share/logstash/config
-            - name: pipeline
-              mountPath: /usr/share/logstash/pipeline
+      - name: logstash
+        image: logstash:8.13.4
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1
+          limits:
+            memory: 4Gi
+            cpu: 2
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 5044
+        volumeMounts:
+          - name: config
+            mountPath: /usr/share/logstash/config
+          - name: pipeline
+            mountPath: /usr/share/logstash/pipeline
       restartPolicy: Always
       volumes:
         - name: config

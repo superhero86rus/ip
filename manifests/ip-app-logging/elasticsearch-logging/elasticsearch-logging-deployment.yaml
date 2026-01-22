@@ -6,6 +6,11 @@ metadata:
     app: elasticsearch-logging
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
   template:
     metadata:
       name: elasticsearch-logging
@@ -13,22 +18,29 @@ spec:
         app: elasticsearch-logging
     spec:
       containers:
-        - name: elasticsearch-logging
-          image: ip-k8s-lcm01:5000/elasticsearch:8.8.0
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: discovery.type
-              value: single-node
-            - name: ES_JAVA_OPTS
-              value: -Xms512m -Xmx1g
-            - name: xpack.security.enabled
-              valueFrom:
-                configMapKeyRef:
-                  key: IP_APP_IS_SECURE
-                  name: ip-app-elk-configmap
-          ports:
-            - containerPort: 9200
-            - containerPort: 9300
+      - name: elasticsearch-logging
+        image: elasticsearch:8.13.4
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1
+          limits:
+            memory: 4Gi
+            cpu: 2
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: discovery.type
+            value: single-node
+          - name: ES_JAVA_OPTS
+            value: -Xms512m -Xmx1g
+          - name: xpack.security.enabled
+            valueFrom:
+              configMapKeyRef:
+                key: IP_APP_IS_SECURE
+                name: ip-app-elk-configmap
+        ports:
+          - containerPort: 9200
+          - containerPort: 9300
       restartPolicy: Always
   selector:
     matchLabels:
